@@ -12,3 +12,6 @@
 # Dependency directories
 /bin/
 /lib/
+# Rust build artifacts
+target/
+Cargo.lock
