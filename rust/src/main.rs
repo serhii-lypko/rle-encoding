@@ -18,24 +18,18 @@ impl RLE {
         let bytes = input.as_bytes();
 
         let mut result: Vec<(u64, u8)> = vec![];
-
-        let mut current_b = bytes[0];
         let mut counter = 0;
 
-        for (index, &b) in bytes.iter().enumerate() {
-            if index == bytes.len() - 1 {
-                result.push((counter + 1, current_b));
-                return Some(result);
-            }
-
-            if b != current_b {
-                result.push((counter, current_b));
-                current_b = b;
+        for i in 0..bytes.len() {
+            if i != 0 && bytes[i] != bytes[i - 1] {
+                result.push((counter, bytes[i - 1]));
                 counter = 1;
             } else {
                 counter += 1;
             }
         }
+
+        result.push((counter, bytes[bytes.len() - 1]));
 
         Some(result)
     }
