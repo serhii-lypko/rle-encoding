@@ -35,7 +35,28 @@ impl RLE {
     }
 
     fn unfold(compressed_data: CompressionResult) -> Option<String> {
-        todo!()
+        if compressed_data.is_empty() {
+            return None;
+        }
+
+        // let mut result_string = String::new();
+
+        // for (counter, value) in compressed_data {
+        //     let ascii_char = value as char;
+
+        //     for _ in 0..counter {
+        //         result_string.push_str(ascii_char.to_string().as_str())
+        //     }
+        // }
+
+        let result_string: String = compressed_data
+            .iter()
+            .flat_map(|(counter, value)| {
+                std::iter::repeat((*value as char).to_string()).take(*counter as usize)
+            })
+            .collect();
+
+        Some(result_string)
     }
 }
 
@@ -62,12 +83,34 @@ mod tests {
     #[test]
     fn test_fold_multiple_characters_input() {
         let input = "aaaabbbbbbcddddd".to_string();
-
         let result = RLE::fold(input);
 
         assert_eq!(
             result,
             Some(vec![(4, b'a'), (6, b'b'), (1, b'c'), (5, b'd')])
         );
+    }
+
+    #[test]
+    fn test_unfold_empty_input() {
+        let compressed_data: CompressionResult = vec![];
+        let result = RLE::unfold(compressed_data);
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn test_unfold_single_character_input() {
+        let compressed_data: CompressionResult = vec![(1, b'a')];
+        let result = RLE::unfold(compressed_data);
+        assert_eq!(result, Some("a".to_string()));
+    }
+
+    #[test]
+    fn test_unfold_multiple_characters_input() {
+        let input = "aaaabbbbbbcddddd".to_string();
+        let compressed = RLE::fold(input.clone()).unwrap();
+        let uncompressed = RLE::unfold(compressed).unwrap();
+
+        assert_eq!(input, uncompressed);
     }
 }
